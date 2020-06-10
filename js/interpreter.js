@@ -11,10 +11,10 @@ class interpreter {
   }
   run(code) {
     var t = this;
-    var l = new lexer(code);
+    this.l = new lexer(code);
     var numVal;
     var word;
-    while (word = l.nextWord()) {
+    while (word = this.l.nextWord()) {
       word = word.toUpperCase();
       numVal = parseFloat(word);
       if (t.dictionary[word]) {
@@ -26,6 +26,39 @@ class interpreter {
       }
     }
   }
+  define(word, code) { this.dictionary[word.toUpperCase()] = code; }
+}
+function makeVar(terp) {
+  var variable = {
+    value: 0,
+  }
+  return function () {
+    terp.stack.push(variable);
+  }
+}
+var variable_words = {
+  "VAR": function (terp) {
+    var var_name = terp.l.nextWord();
+    if (var_name == null) {
+      throw "Unexpected end of input.";
+    }
+    terp.define(var_name, makeVar(terp))
+  },
+  "STORE": function (terp) {
+    if (terp.stack.length < 2) {
+      throw "Not enough items on stack";
+    }
+    var reference = terp.stack.pop();
+    var newValue = terp.stack.pop();
+    reference.value = newValue;
+  },
+  "FETCH": function (terp) {
+    if (terp.stack.length < 1) {
+      throw "Not enough items on stack.";
+    }
+    var r = terp.stack.pop();
+    terp.stack.push(r.value);
+  },
 }
 var PrintingWords = {
   // Print and discard top of stack.
@@ -41,9 +74,10 @@ var PrintingWords = {
     if (terp.stack.length < 1) throw "Not enough items on stack";
     var tos = terp.stack.pop(); console.log(tos); /// TOS: TOP OF STACK ///
   },
-  "": function (terp) {
+  "PRINTD": function (terp) {
     if (terp.stack.length < 1) throw "Not enough items on stack";
-    var tos = terp.stack.pop(); alert(tos); /// TOS: TOP OF STACK ///
+    var tos = terp.stack.pop(); /// TOS: TOP OF STACK ///
+    $(".output").append("<br> > " + tos + ";");
   },
 };
 var MathWords = {

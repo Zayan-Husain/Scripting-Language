@@ -1,10 +1,11 @@
 var i;
 $(document).ready(function () {
-  var script = "1 1 + PRINTC";
+  var script = "";
   i = new interpreter();
   i.addWords(PrintingWords);
   i.addWords(MathWords);
   i.addWords(StackWords);
+  i.addWords(variable_words);
   // i.run(script);
   runCode();
 });

@@ -5,6 +5,7 @@ $(document).ready(function () {
   i.addWords(PrintingWords);
   i.addWords(MathWords);
   i.addWords(StackWords);
+  i.addWords(CommentWords);
   i.addWords(variable_words);
   // i.run(script);
   runCode();

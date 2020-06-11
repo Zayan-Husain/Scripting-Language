@@ -36,18 +36,24 @@ function makeVar(terp) {
     terp.stack.push(variable);
   }
 }
+var CommentWords = {
+  "/*": function (terp) {
+    var nextWord = terp.l.nextWord();
+    if (nextWord === null) throw "Unexpected end of input.";
+    while (nextWord.substr(-2, 2) !== "*/") {
+      nextWord = terp.l.nextWord();
+      if (nextWord === null) throw "Unexpected end of input.";
+    }
+  }
+}
 var variable_words = {
   "VAR": function (terp) {
     var var_name = terp.l.nextWord();
-    if (var_name == null) {
-      throw "Unexpected end of input.";
-    }
+    if (var_name == null) throw "Unexpected end of input.";
     terp.define(var_name, makeVar(terp))
   },
   "STORE": function (terp) {
-    if (terp.stack.length < 2) {
-      throw "Not enough items on stack";
-    }
+    if (terp.stack.length < 2) throw "Not enough items on stack";
     var reference = terp.stack.pop();
     var newValue = terp.stack.pop();
     reference.value = newValue;
@@ -59,6 +65,27 @@ var variable_words = {
     var r = terp.stack.pop();
     terp.stack.push(r.value);
   },
+  // "\"": function (terp) {
+  //   var collecter = "";
+  //   var done = false;
+  //   while (!done) {
+  //     var nextWord = terp.l.nextWord();
+  //     if (nextWord === null) {
+  //       throw "Unexpected end of input";
+  //     }
+  //     if (nextWord.substr(-1, 1) === "\"") {
+  //       nextWord = nextWord.slice(0, -1);
+  //       collecter += nextWord;
+  //       done = true;
+  //     } else {
+  //       collecter += nextWord + " ";
+  //     }
+  //   }
+  //   terp.stack.push(collecter);
+  // }
+  "\"": function (terp) {
+    terp.stack.push(terp.l.nextCharsUpTo("\""));
+  }
 }
 var PrintingWords = {
   // Print and discard top of stack.

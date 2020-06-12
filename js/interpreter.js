@@ -1,7 +1,10 @@
 class interpreter {
   constructor() {
     this.dictionary = {};
-    this.stack = [];
+    this.data_stack = [];
+    this.compile_buffer = [];
+    this.stack = this.data_stack;
+    this.immediate = false;
   }
   addWords(newDict) {
     var t = this;
@@ -11,22 +14,46 @@ class interpreter {
   }
   run(code) {
     var t = this;
-    this.l = new lexer(code);
-    var numVal;
-    var word;
-    while (word = this.l.nextWord()) {
-      word = word.toUpperCase();
-      numVal = parseFloat(word);
-      if (t.dictionary[word]) {
-        t.dictionary[word](this);
-      } else if (!isNaN(numVal)) {
-        t.stack.push(numVal);
+    t.l = new lexer(code);
+    var numVal, word;
+    while (word = t.l.nextWord()) {
+      word = t.compile(word);
+      if (t.immediate) {
+        t.interpret(word);
+        t.immediate = false;
+      } else if (t.isCompiling(word)) {
+        t.stack.push(word);
       } else {
-        throw "Unknown Word.";
+        t.interpret(word);
       }
     }
   }
+  lookUp(w) { return this.dictionary[w]; }
   define(word, code) { this.dictionary[word.toUpperCase()] = code; }
+  startCompiling() { this.stack = this.compile_buffer; }
+  isCompiling() { return this.stack === this.compile_buffer; }
+  stopCompiling() { this.stack = this.data_stack; }
+  compile(w) {
+    var t = this;
+    w = w.toUpperCase();
+    var numVal = parseFloat(w);
+    if (t.dictionary[w]) {
+      t.immediate = t.dictionary[w].immediate;
+      return t.dictionary[w];
+    } else if (!isNaN(numVal)) {
+      return numVal;
+    } else {
+      console.log(w)
+      throw "Unknown word";
+    }
+  }
+  interpret(w) {
+    if (typeof w === "function") {
+      w(this);
+    } else {
+      this.stack.push(w);
+    }
+  }
 }
 function makeVar(terp) {
   var variable = {
@@ -34,6 +61,30 @@ function makeVar(terp) {
   }
   return function () {
     terp.stack.push(variable);
+  }
+}
+function makeWord(code) {
+  return function (terp) {
+    var code_pointer = 0;
+    while (code_pointer < code.length) {
+      terp.interpret(code[code_pointer]);
+      code_pointer++;
+    }
+  }
+}
+var compiling_words = {
+  "DEF": function (terp) {
+    var newWord = terp.l.nextWord(); //
+    if (newWord === null) throw "Unexpected end of input."; //
+    terp.latest = newWord; //
+    terp.startCompiling(); //
+  },
+  "END": function (terp) {
+    var newCode = terp.stack.slice(0); //get new stack
+    terp.stack.length = 0; //clear compile buffer
+    console.log(terp.latest);
+    terp.define(terp.latest, makeWord(newCode)); //define the function
+    terp.stopCompiling();
   }
 }
 var CommentWords = {

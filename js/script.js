@@ -8,7 +8,9 @@ $(document).ready(function () {
   i.addWords(CommentWords);
   i.addWords(variable_words);
   i.addWords(compiling_words);
+  i.addWords(ListWords);
   compiling_words["DEF"].immediate = true;
+  ListWords["["].immediate = true;
   compiling_words["END"].immediate = true;
   variable_words["VAR"].immediate = true;
   variable_words["\""].immediate = true;

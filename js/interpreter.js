@@ -72,6 +72,48 @@ function makeWord(code) {
     }
   }
 }
+var ListWords = {
+  "[": function (terp) {
+    var list = [];
+    var oldStack = terp.stack;
+    terp.stack = list;
+    while (true) {
+      var nextWord = terp.l.nextWord();
+      if (nextWord === null) {
+        throw "Unexpected end of input.";
+      }
+      if (nextWord === "]") {
+        break;
+      }
+      nextWord = terp.compile(nextWord);
+      if (nextWord.immediate) {
+        terp.interpret(nextWord);
+      } else {
+        terp.stack.push(nextWord)
+      }
+    } //end while loop
+    terp.stack = oldStack;
+    terp.stack.push(list);
+  },
+  "LENGTH": function (terp) {
+    if (terp.stack.length < 1) throw "Not enough items on stack.";
+    var obj = terp.stack.pop();
+    terp.stack.push(obj.length)
+  },
+  "ITEM": function (terp) {
+    if (terp.stack.length < 2) throw "Not enough items on stack.";
+    var key = terp.stack.pop(),
+      obj = terp.stack.pop();
+    if (typeof obj === "object") terp.stack.push(obj[key]);
+    else throw "Object expected.";
+  },
+  "RUN": function (terp) {
+    if (terp.stack.length < 1) throw "Not enough items on stack.";
+    var arr = terp.stack.pop();
+    if (!Array.isArray(arr)) throw "List expected";
+    terp.interpret(makeWord(arr))
+  }
+}
 var compiling_words = {
   "DEF": function (terp) {
     var newWord = terp.l.nextWord(); //

@@ -9,6 +9,8 @@ $(document).ready(function () {
   i.addWords(variable_words);
   i.addWords(compiling_words);
   i.addWords(ListWords);
+  i.addWords(ControlWords);
+  i.addWords(HTMLCommands);
   compiling_words["DEF"].immediate = true;
   ListWords["["].immediate = true;
   compiling_words["END"].immediate = true;

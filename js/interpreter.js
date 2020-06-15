@@ -65,12 +65,70 @@ function makeVar(terp) {
 }
 function makeWord(code) {
   return function (terp) {
-    var code_pointer = 0;
-    while (code_pointer < code.length) {
-      terp.interpret(code[code_pointer]);
-      code_pointer++;
+    var oldPointer = terp.codePointer;
+    terp.codePointer = 0;
+    while (terp.codePointer < code.length) {
+      terp.interpret(code[terp.codePointer]);
+      terp.codePointer++;
     }
+    terp.codePointer = oldPointer;
   }
+}
+var HTMLCommands = {
+  "title1": function (terp) {
+    if (terp.stack.length < 1) throw "Not enough items on stack. 'CONTINUE'";
+    var h1 = terp.stack.pop();
+    h1 = "<h1 class='noBreak'>" + h1 + "</h1>";
+    terp.stack.push(h1);
+  },
+  "title2": function (terp) {
+    if (terp.stack.length < 1) throw "Not enough items on stack. 'CONTINUE'";
+    var h2 = terp.stack.pop();
+    h2 = "<h2 class='noBreak'>" + h2 + "</h2>";
+    terp.stack.push(h2);
+  },
+  "P": function (terp) {
+    if (terp.stack.length < 1) throw "Not enough items on stack. 'CONTINUE'";
+    var p = terp.stack.pop();
+    p = "<p class='noBreak'>" + p + "</p>";
+    terp.stack.push(p);
+  },
+  "COL": function (terp) {
+    if (terp.stack.length < 1) throw "Not enough items on stack. 'CONTINUE'";
+  }
+}
+var ControlWords = {
+  "?CONTINUE": function (terp) {
+    if (terp.stack.length < 1) throw "Not enough items on stack. 'CONTINUE'";
+    var cond = terp.stack.pop();
+    if (cond) {
+      terp.codePointer = Infinity;
+    }
+  },
+  "?LOOP": function (terp) {
+    if (terp.stack.length < 1) throw "Not enough items on stack. 'LOOP'";
+    var code = terp.stack.pop();
+    if (!Array.isArray(code)) throw "List expected. 'LOOP'";
+    var codeWord = makeWord(code);
+    var oldBreakState = terp.breakState;
+    terp.breakState = false;
+    while (!terp.breakState) codeWord(terp);
+    terp.breakState = oldBreakState;
+  },
+  "?BREAK": function (terp) {
+    if (terp.stack.length < 1) throw "Not enough items on stack. 'BREAK'";
+    var cond = terp.stack.pop();
+    if (cond) {
+      terp.codePointer = Infinity;
+      terp.breakState = true;
+    }
+  },
+  ">": function (terp) {
+    if (terp.stack.length < 2) throw "Not enough items on stack. '>'";
+    var term2 = terp.stack.pop();
+    var term1 = terp.stack.pop();
+    terp.stack.push(term1 > term2);
+  },
 }
 var ListWords = {
   "[": function (terp) {
@@ -117,7 +175,7 @@ var ListWords = {
 var compiling_words = {
   "DEF": function (terp) {
     var newWord = terp.l.nextWord(); //
-    if (newWord === null) throw "Unexpected end of input."; //
+    if (newWord === null) throw "Unexpected end of input. 'DEF'"; //
     terp.latest = newWord; //
     terp.startCompiling(); //
   },

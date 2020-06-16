@@ -4,6 +4,9 @@ class interpreter {
     this.data_stack = [];
     this.compile_buffer = [];
     this.stack = this.data_stack;
+    this.html_stack = [];
+    this.did_row = false;
+    this.did_col = false;
     this.immediate = false;
   }
   addWords(newDict) {
@@ -74,28 +77,80 @@ function makeWord(code) {
     terp.codePointer = oldPointer;
   }
 }
+//stack has item
+function shi(terp, is, name) { if (terp.stack.length < is) throw `Not enough items on stack. '${name}'`; }//stack_has_i
 var HTMLCommands = {
   "title1": function (terp) {
-    if (terp.stack.length < 1) throw "Not enough items on stack. 'CONTINUE'";
+    if (terp.stack.length < 1) throw "Not enough items on stack. 'title1'";
     var h1 = terp.stack.pop();
-    h1 = "<h1 class='noBreak'>" + h1 + "</h1>";
-    terp.stack.push(h1);
+    h1 = `<h1 class='noBreak'>${h1}</h1>`;
+    terp.html_stack.push(h1);
   },
   "title2": function (terp) {
-    if (terp.stack.length < 1) throw "Not enough items on stack. 'CONTINUE'";
+    if (terp.stack.length < 1) throw "Not enough items on stack. 'title2'";
     var h2 = terp.stack.pop();
-    h2 = "<h2 class='noBreak'>" + h2 + "</h2>";
-    terp.stack.push(h2);
+    h2 = `<h2 class='noBreak'>${h2}</h2>`;
+    terp.html_stack.push(h2);
   },
   "P": function (terp) {
-    if (terp.stack.length < 1) throw "Not enough items on stack. 'CONTINUE'";
+    if (terp.stack.length < 1) throw "Not enough items on stack. 'P'";
     var p = terp.stack.pop();
-    p = "<p class='noBreak'>" + p + "</p>";
-    terp.stack.push(p);
+    p = `<p class='noBreak'>${p}</p>`;
+    terp.html_stack.push(p);
   },
   "COL": function (terp) {
-    if (terp.stack.length < 1) throw "Not enough items on stack. 'CONTINUE'";
-  }
+    //size of col
+    var coln, colns;
+    //stupid proof
+    //first
+    if (terp.stack.length < 1) { coln = 12; }
+    else { coln = terp.stack.pop(); }
+    //second
+    if (terp.stack.length < 1) { colns = 12; }
+    else { colns = terp.stack.pop(); }
+    //auto close tag
+    if (terp.did_col) { terp.html_stack.push("</div>"); }
+    terp.html_stack.push(`<div class ='col s${colns} l${coln}'>`);
+    terp.did_col = true;
+  },
+  "ROW": function (terp) {
+    //auto close tag
+    if (terp.did_row) { terp.html_stack.push("</div>"); }
+    terp.html_stack.push("<div class ='row'>");
+    terp.did_col = false;
+    terp.did_row = true;
+  },
+  "IMG": function (terp) {
+    var src;
+    if (terp.stack.length < 1) { src = "img/ph.jpg"; }
+    else { src = terp.stack.pop(); }
+    terp.html_stack.push("<img src='" + src + "' class='responsive-img' />");
+  },
+  "MENU": function (terp) {
+    shi(terp, 2, "MENU");
+    var imageURL = terp.stack.pop(), URLs, names;
+    if (Array.isArray(imageURL)) {
+      URLs = imageURL;
+      imageURL = "img/ph.jpg";
+      names = terp.stack.pop();
+    } else {
+      URLs = terp.stack.pop();
+      names = terp.stack.pop();
+    }
+    var html = "<div class=\"menu\"><nav>";
+    html += `<div class="col l2 s7 logo"><img src="${imageURL}" class="responsive-img col l8 s12" /></div>`;
+    html += `<div class="col l6 menuList"><ul>`;
+    for (let i = 0; i < names.length; i++) {
+      const name = names[i];
+      let URL = "/#";
+      if (URLs.length > i) {
+        URL = URLs[i];
+      }
+      html += `<li><a href="${URL}">${name}</a></li>`;
+    }
+    html += "</ul></div><nav></div>";
+    terp.html_stack.push(html);
+  },
 }
 var ControlWords = {
   "?CONTINUE": function (terp) {
@@ -256,6 +311,13 @@ var PrintingWords = {
     if (terp.stack.length < 1) throw "Not enough items on stack";
     var tos = terp.stack.pop(); /// TOS: TOP OF STACK ///
     $(".output").append("<br> > " + tos + ";");
+  },
+  "PRINTHTML": function (terp) {
+    var yhtml = "";
+    for (var i = 0; i <= terp.html_stack.length - 1; i++) {
+      yhtml += terp.html_stack[i];
+    }
+    $(".output").append("<div class='container'>" + yhtml + "</div></div></div>");
   },
 };
 var MathWords = {

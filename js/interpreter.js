@@ -77,6 +77,20 @@ function makeWord(code) {
     terp.codePointer = oldPointer;
   }
 }
+function createMenuLIs(names, URLs) {
+  var html = "";
+  for (let i = 0; i < names.length; i++) {
+    console.log("into loop");
+    const name = names[i];
+    let URL = "/#";
+    if (URLs.length > i) {
+      URL = URLs[i];
+    }
+    html += `<li><a href="${URL}">${name}</a></li>`;
+  } //end for loop
+  console.log(html);
+  return html;
+}
 //stack has item
 function shi(terp, is, name) { if (terp.stack.length < is) throw `Not enough items on stack. '${name}'`; }//stack_has_i
 var HTMLCommands = {
@@ -137,19 +151,22 @@ var HTMLCommands = {
       URLs = terp.stack.pop();
       names = terp.stack.pop();
     }
-    var html = "<div class=\"menu\"><nav>";
+    var html = `<div class="menu"><nav>`;
     html += `<div class="col l2 s7 logo"><img src="${imageURL}" class="responsive-img col l8 s12" /></div>`;
-    html += `<div class="col l6 menuList"><ul>`;
-    for (let i = 0; i < names.length; i++) {
-      const name = names[i];
-      let URL = "/#";
-      if (URLs.length > i) {
-        URL = URLs[i];
-      }
-      html += `<li><a href="${URL}">${name}</a></li>`;
-    }
-    html += "</ul></div><nav></div>";
+    html += `<div class="col l6 menuList">`;
+    html += `<a href="#" data-target="mobile-menu" class="sidenav-trigger"><i class="material-icons">menu</i></a>`;
+    html += `<ul class="hide-on-med-and-down">`;
+    html += createMenuLIs(names, URLs);
+    html += `</ul><ul id="mobile-menu" class="sidenav">`;
+    html += createMenuLIs(names, URLs);
+    html += "</ul></div></nav></div>";
     terp.html_stack.push(html);
+  },
+  "FOOTERSTART": function (terp) {
+    terp.html_stack.push(`<footer class="page-footer"><div class="container"><div class="row">`);
+  },
+  "FOOTEREND": function (terp) {
+    terp.html_stack.push(`</div></div></footer>`)
   },
 }
 var ControlWords = {

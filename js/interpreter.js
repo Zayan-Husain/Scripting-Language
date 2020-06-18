@@ -114,7 +114,7 @@ var HTMLCommands = {
   },
   "COL": function (terp) {
     //size of col
-    var coln, colns;
+    var coln, colns, _class;
     //stupid proof
     //first
     if (terp.stack.length < 1) { coln = 12; }
@@ -122,9 +122,12 @@ var HTMLCommands = {
     //second
     if (terp.stack.length < 1) { colns = 12; }
     else { colns = terp.stack.pop(); }
+    //third
+    if (terp.stack.length < 1) { _class = "" }
+    else { _class = terp.stack.pop(); }
     //auto close tag
     if (terp.did_col) { terp.html_stack.push("</div>"); }
-    terp.html_stack.push(`<div class ='col s${colns} l${coln}'>`);
+    terp.html_stack.push(`<div class ='col s${colns} l${coln} ${_class}'>`);
     terp.did_col = true;
   },
   "ROW": function (terp) {
@@ -160,6 +163,19 @@ var HTMLCommands = {
     html += `</ul><ul id="mobile-menu" class="sidenav">`;
     html += createMenuLIs(names, URLs);
     html += "</ul></div></nav></div>";
+    terp.html_stack.push(html);
+  },
+  "FOOTERITEM": function (terp) {
+    var URLs, names;
+    if (terp.stack.length < 1) { names = ["Link 1", "Link 2", "Link 3"]; }
+    else { names = terp.stack.pop(); }
+    if (terp.stack.length < 1) { URLs = ["#/", "#/", "#/"]; }
+    else { URLs = terp.stack.pop(); }
+    var html = `<div class="col l4 s12 center">`;
+    html += `<ul>`;
+    html += createMenuLIs(names, URLs);
+    html += `</ul>`;
+    html += `</div>`
     terp.html_stack.push(html);
   },
   "FOOTERSTART": function (terp) {
@@ -335,6 +351,7 @@ var PrintingWords = {
       yhtml += terp.html_stack[i];
     }
     $(".output").append("<div class='container'>" + yhtml + "</div></div></div>");
+    terp.html_stack = [];
   },
 };
 var MathWords = {

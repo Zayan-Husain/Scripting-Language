@@ -19,7 +19,11 @@ $(document).ready(function () {
   CommentWords["/*"].immediate = true;
   // i.run(script);
   runCode();
+  
+  //materializecss js
   $('.sidenav').sidenav();
+  $('.modal').modal();
+  //$(".modal").modal('open');
 });
 var runCode = () => {
   $(".container").on("click", ".btn", function () {

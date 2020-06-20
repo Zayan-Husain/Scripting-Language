@@ -97,19 +97,19 @@ var HTMLCommands = {
   "title1": function (terp) {
     if (terp.stack.length < 1) throw "Not enough items on stack. 'title1'";
     var h1 = terp.stack.pop();
-    h1 = `<h1 class='noBreak'>${h1}</h1>`;
+    h1 = `<h1>${h1}</h1>`;
     terp.html_stack.push(h1);
   },
   "title2": function (terp) {
     if (terp.stack.length < 1) throw "Not enough items on stack. 'title2'";
     var h2 = terp.stack.pop();
-    h2 = `<h2 class='noBreak'>${h2}</h2>`;
+    h2 = `<h2>${h2}</h2>`;
     terp.html_stack.push(h2);
   },
   "P": function (terp) {
     if (terp.stack.length < 1) throw "Not enough items on stack. 'P'";
     var p = terp.stack.pop();
-    p = `<p class='noBreak'>${p}</p>`;
+    p = `<p>${p}</p>`;
     terp.html_stack.push(p);
   },
   "COL": function (terp) {
@@ -132,16 +132,18 @@ var HTMLCommands = {
   },
   "ROW": function (terp) {
     //auto close tag
-    if (terp.did_row) { terp.html_stack.push("</div>"); }
+    if (terp.did_row) { terp.html_stack.push("</div></div><!--end row-->"); }
     terp.html_stack.push("<div class ='row'>");
     terp.did_col = false;
     terp.did_row = true;
   },
   "IMG": function (terp) {
-    var src;
-    if (terp.stack.length < 1) { src = "img/ph.jpg"; }
+    var src, _class;
+    if (terp.stack.length < 1) { src = imgPlaceholderUrl; }
     else { src = terp.stack.pop(); }
-    terp.html_stack.push("<img src='" + src + "' class='responsive-img' />");
+    if (terp.stack.length < 1) { _class = ""; }
+    else { _class = terp.stack.pop(); }
+    terp.html_stack.push(`<img src='${src}' class='responsive-img ${_class}' />`);
   },
   "MENU": function (terp) {
     shi(terp, 2, "MENU");
@@ -184,6 +186,23 @@ var HTMLCommands = {
   "FOOTEREND": function (terp) {
     terp.html_stack.push(`</div></div></footer>`)
   },
+  "HTML": function (terp) {
+    var html;
+    if (terp.stack.length < 1) html = "";
+    else html = terp.stack.pop();
+    terp.html_stack.push(html);
+  },
+  "LINK": function (terp) {
+    var url, text, _class;
+    if (terp.stack.length < 1) text = 'link';
+    else text = terp.stack.pop();
+    if (terp.stack.length < 1) url = "#/";
+    else url = terp.stack.pop();
+    if (terp.stack.length < 1) _class = "";
+    else _class = terp.stack.pop();
+    terp.html_stack.push(`<a href="${url}" class="${_class}" >${text}</a>`);
+  },
+  "LOREM": function (terp) { terp.stack.push(loremIpsum); }
 }
 var ControlWords = {
   "?CONTINUE": function (terp) {
@@ -322,7 +341,7 @@ var variable_words = {
   //   }
   //   terp.stack.push(collecter);
   // }
-  "\"": function (terp) {
+  "\"": function (terp) {/////////////////////////////////////////////////////////STRING///////////////////////
     terp.stack.push(terp.l.nextCharsUpTo("\""));
   }
 }
@@ -351,6 +370,38 @@ var PrintingWords = {
       yhtml += terp.html_stack[i];
     }
     $(".output").append("<div class='container'>" + yhtml + "</div></div></div>");
+    terp.html_stack = [];
+  },
+  "GETHTML": function (terp) {
+    var yhtml = "<div class='container'>";
+    for (var i = 0; i <= terp.html_stack.length - 1; i++) {
+      yhtml += terp.html_stack[i];
+    }
+    yhtml += "</div></div></div>";
+    $("#modal1 textarea").val(yhtml);
+    $(".modal").modal('open');
+  },
+  "SAVEAS": function (terp) {
+    var zip = new JSZip();
+    var yhtml = yheader + "<div class='container'>";
+    for (var i = 0; i <= terp.html_stack.length - 1; i++) {
+      yhtml += terp.html_stack[i];
+    }
+    yhtml += "</div></div></div>" + yfooter;
+
+    zip.file("index.html", yhtml);
+    var img = zip.folder("img");
+    var css = zip.folder("css");
+    var js = zip.folder("js");
+    //img.file("ph.jpg", "img/ph.jpg", {base64: true});
+    js.file("script.js", yscriptf);
+    css.file("style.css", "");
+    css.file("box_model_helper.css", box_modelh);
+    zip.generateAsync({ type: "blob" })
+      .then(function (content) {
+        // see FileSaver.js
+        saveAs(content, "website.zip");
+      });
     terp.html_stack = [];
   },
 };

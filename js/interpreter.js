@@ -86,7 +86,7 @@ function createMenuLIs(names, URLs) {
     if (URLs.length > i) {
       URL = URLs[i];
     }
-    html += `<li><a href="${URL}">${name}</a></li>`;
+    html += `<li><a class="white-text" href="${URL}">${name}</a></li>`;
   } //end for loop
   console.log(html);
   return html;
@@ -146,13 +146,13 @@ var HTMLCommands = {
     terp.html_stack.push(`<img src='${src}' class='responsive-img ${_class}' />`);
   },
   "MENU": function (terp) {
-    shi(terp, 2, "MENU");
-    var imageURL = terp.stack.pop(), URLs, names;
-    if (Array.isArray(imageURL)) {
+    var imageURL = terp.stack.pop(), URLs, names; /////imageURL is the first argument from the right before "MENU"
+    if (Array.isArray(imageURL)) { /////////////// if they didn't put an image string
       URLs = imageURL;
-      imageURL = "img/ph.jpg";
+      imageURL = imgPlaceholderUrl;
       names = terp.stack.pop();
     } else {
+      imageURL = terp.stack.pop();
       URLs = terp.stack.pop();
       names = terp.stack.pop();
     }
@@ -184,7 +184,14 @@ var HTMLCommands = {
     terp.html_stack.push(`<footer class="page-footer"><div class="container"><div class="row">`);
   },
   "FOOTEREND": function (terp) {
-    terp.html_stack.push(`</div></div></footer>`)
+    var companyName, companyYear;
+    if (terp.stack.length < 1) companyName = `Company Name`;
+    else companyName = terp.stack.pop();
+    if (terp.stack.length < 1) companyYear = `2100`;
+    else companyYear = terp.stack.pop();
+    terp.html_stack.push(`</div></div><div class="footer-copyright">
+    <div class="container center"><span>© ${companyYear} Copyright ${companyName}</span></div>
+  </div></footer>`)
   },
   "HTML": function (terp) {
     var html;

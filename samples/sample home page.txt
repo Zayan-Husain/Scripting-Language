@@ -1,0 +1,30 @@
+row
+  col
+    [ " link 1" " link 2" " link 3" " link 4" ] [ " {Url for link 1}" " {Url for link 2}" " {Url for link 3}" " {Url for link 4}" ] MENU
+row
+  12 4 col
+    " title" title2
+    img
+    " btn" " #\" " click" link
+  12 4 col
+    " title" title2
+    img
+    " btn" " #\" " click" link
+  12 4 col
+    " title" title2
+    img
+    " btn" " #\" " click" link
+row
+  12 6 col
+    img
+  12 6 col
+    " about us" title2
+    lorem p
+row
+  footerstart
+  footeritem
+  footeritem
+  footeritem
+  
+  footerend
+printhtml

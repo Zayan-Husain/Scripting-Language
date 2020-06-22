@@ -131,9 +131,12 @@ var HTMLCommands = {
     terp.did_col = true;
   },
   "ROW": function (terp) {
+    var _class;
+    if (terp.stack.length < 1) { _class = ""; }
+    else { _class = terp.stack.pop(); }
     //auto close tag
     if (terp.did_row) { terp.html_stack.push("</div></div><!--end row-->"); }
-    terp.html_stack.push("<div class ='row'>");
+    terp.html_stack.push(`<div class ='row ${_class}'>`);
     terp.did_col = false;
     terp.did_row = true;
   },
@@ -181,7 +184,10 @@ var HTMLCommands = {
     terp.html_stack.push(html);
   },
   "FOOTERSTART": function (terp) {
-    terp.html_stack.push(`<footer class="page-footer"><div class="container"><div class="row">`);
+    var _class;
+    if (terp.stack.length < 1) { _class = ""; }
+    else { _class = terp.stack.pop(); }
+    terp.html_stack.push(`<footer class="page-footer ${_class}"><div class="container"><div class="row">`);
   },
   "FOOTEREND": function (terp) {
     var companyName, companyYear;

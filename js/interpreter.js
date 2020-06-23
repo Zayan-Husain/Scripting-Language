@@ -155,7 +155,7 @@ var HTMLCommands = {
       imageURL = imgPlaceholderUrl;
       names = terp.stack.pop();
     } else {
-      imageURL = terp.stack.pop();
+      // imageURL = terp.stack.pop();
       URLs = terp.stack.pop();
       names = terp.stack.pop();
     }
@@ -382,7 +382,7 @@ var PrintingWords = {
     for (var i = 0; i <= terp.html_stack.length - 1; i++) {
       yhtml += terp.html_stack[i];
     }
-    $(".output").append("<div class='container'>" + yhtml + "</div></div></div>");
+    $(".output").html("<div class='container'>" + yhtml + "</div></div></div>");
     terp.html_stack = [];
   },
   "GETHTML": function (terp) {

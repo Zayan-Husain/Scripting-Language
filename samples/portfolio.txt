@@ -1,0 +1,33 @@
+/* simple portfolio page*/
+row
+   " center" 12 12 col
+     " your name" title1
+" center" row
+  " mb20 mt20" 12 4 col
+    img
+    " btn" " #\" " click here" link
+
+  " mb20 mt20" 12 4 col
+    img
+    " btn" " #\" " click here" link
+
+  " mb20 mt20" 12 4 col
+    img
+    " btn" " #\" " click here" link
+
+  " mb20 mt20" 12 4 col
+    img
+    " btn" " #\" " click here" link
+
+  " mb20 mt20" 12 4 col
+    img
+    " btn" " #\" " click here" link
+
+  " mb20 mt20" 12 4 col
+    img
+    " btn" " #\" " click here" link
+row
+  " center" 12 12 col
+	" contact info here" p
+	" © 2020 Copyright Notice" p
+printhtml

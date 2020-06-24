@@ -170,6 +170,23 @@ var HTMLCommands = {
     html += "</ul></div></nav></div>";
     terp.html_stack.push(html);
   },
+  "MENU2": function (terp) {
+    var URLs, names;
+    if (terp.stack.length < 1) URLs = ["#/", "#/", "#/"];
+    else URLs = terp.stack.pop();
+    if (terp.stack.length < 1) names = ["Link 1", "Link 2", "Link 3"];
+    else names = terp.stack.pop();
+    var html = `<div class="menu"><nav>`;
+    html += `<div class="col l1"></div>`;
+    html += `<div class="col l10 menuList">`;
+    html += `<a href="#" data-target="mobile-menu" class="sidenav-trigger"><i class="material-icons">menu</i></a>`;
+    html += `<ul class="hide-on-med-and-down">`;
+    html += createMenuLIs(names, URLs);
+    html += `</ul><ul id="mobile-menu" class="sidenav">`;
+    html += createMenuLIs(names, URLs);
+    html += "</ul></div></nav></div>";
+    terp.html_stack.push(html);
+  },
   "FOOTERITEM": function (terp) {
     var URLs, names;
     if (terp.stack.length < 1) { names = ["Link 1", "Link 2", "Link 3"]; }

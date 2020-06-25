@@ -1,0 +1,92 @@
+/* layout use sample*/
+
+" center" row
+	col
+		" grid use example" title1
+
+" grey" row
+
+	" center" 12 12 col
+		" 12 columns width" p
+" grey" row
+	" center red white-text" 12 6 col
+		" 6 columns width" p
+	" center blue white-text" 12 5 col
+		" 5 columns width" p
+" grey" row
+	" center green white-text" 12 4 col
+		" 4 columns width" p
+	" center orange white-text" 12 3 col
+		" 3 columns width" p	
+	" center teal white-text" 12 2 col
+		" 2 columns width" p	
+	" center brown white-text" 12 1 col
+		" 1 columns width" p	
+	" center teal white-text" 12 2 col
+		" 2 columns width" p
+" grey" row			
+	" center brown white-text" 12 7 col
+		" 7 columns width" p	
+	" center  blue-grey white-text" 12 4 col
+		" 4 columns width" p
+" grey" row				
+	" center yellow  white-text" 12 7 col
+		" 7 columns width" p				
+	" center yellow darken-3  white-text" 12 7 col
+		" 7 columns width" p				
+	" center yellow  white-text" 12 7 col
+		" 7 columns width" p
+	" center" 12 12 col
+		" notice how the second and third 7 columns elements wrap to the next line
+		when the grid exceeds 12 columns width" p
+" grey" row				
+	" center cyan   white-text" 12 8 col
+		" 8 columns width" p				
+	" center lime  white-text" 12 4 col
+		" 4 columns width" p
+		
+" grey" row				
+	" center pink accent-4    white-text" 12 9 col
+		" 9 columns width" p				
+	" center indigo   white-text" 12 3 col
+		" 3 columns width" p		
+" grey" row				
+	" center pink  white-text" 12 2 col
+		" 2 columns width" p				
+	" center blue darken-4   white-text" 12 10 col
+		" 10 columns width" p
+" center" row
+
+	col
+		" kitty brands area" title2
+" grey darken-3 pt20 pb20" row
+
+	" pl20 pr20" 12 2 col
+		img
+	" pl20 pr20" 12 2 col
+		img
+	" pl20 pr20" 12 2 col
+		img
+	" pl20 pr20" 12 2 col
+		img
+	" pl20 pr20" 12 2 col
+		img
+	" pl20 pr20" 12 2 col
+		img
+row
+
+	" pl20 pr20  red darken-1 card" 12 2 col
+		" 2 columns width " p
+	" pl20 pr20  red darken-1 card" 12 2 col
+		" 2 columns width" p
+	" pl20 pr20  red darken-1 card" 12 2 col
+		" 2 columns width" p
+	" pl20 pr20  red darken-1 card" 12 2 col
+		" 2 columns width" p
+	" pl20 pr20  red darken-1 card" 12 2 col
+		" 2 columns width" p
+	" pl20 pr20  red darken-1 card" 12 2 col
+		" 2 columns width" p
+
+
+printhtml
